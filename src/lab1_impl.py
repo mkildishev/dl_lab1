@@ -42,9 +42,12 @@ class Network:
         self.__ws = np.array([])
         self.__rate = rate
         self.__batch_size = 0
-        self.debug = debug
+        self.__debug = debug
 
     def fit(self, X, Y, batch_size, number_epochs):
+        if self.__debug:
+            print("Shape X: ", X.shape)
+            print("Shape Y: ", Y.shape)
         np.random.seed(1)
         self.__batch_size = batch_size
         self.__input_nodes_num = X.shape[1]
@@ -63,8 +66,15 @@ class Network:
         self.ws = coef_s * np.random.randn(self.__output_nodes_num, self.__hidden_nodes_num)
 
     def __forward_prop(self, input):
+        if self.__debug:
+            print("Input transpose shape: ", input.T.shape)
+            print("Weight hidden shape: ", self.wh.shape)
         X1p = np.dot(self.wh, input.T)
+        if self.__debug:
+            print("X1p shape ", X1p.shape)
         X1 = relu(X1p)
+        if self.__debug:
+            print("X1 shape ", X1.shape)
         self.__nodes['X1p'] = X1p
         self.__nodes['X1'] = X1
 
@@ -85,16 +95,16 @@ class Network:
 
     def evaluate(self, X, Y):
         self.__forward_prop(X)
-        crossentropy = -np.sum(Y * np.log(self.__nodes['X2'].T)) / X.shape[0]
+        cross_entropy = -np.sum(Y * np.log(self.__nodes['X2'].T)) / X.shape[0]
 
         result_net = np.argmax(self.__nodes['X2'], axis=0)
         result_real = np.argmax(Y, axis=1)
         accuracy = (result_net == result_real).mean()
 
-        return crossentropy, accuracy
+        return cross_entropy, accuracy
 
 
-def run(hidden_size=240, batch_size=128, rate=0.3, epochs=5):
+def run(hidden_nodes_num=240, batch_size=128, rate=0.1, number_epochs=20):
     (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 
     train_images = train_images.reshape((60000, 28 * 28))
@@ -105,10 +115,10 @@ def run(hidden_size=240, batch_size=128, rate=0.3, epochs=5):
     train_labels = to_categorical(train_labels)
     test_labels = to_categorical(test_labels)
 
-    net = Network(hidden_size, 10, rate)
+    net = Network(hidden_nodes_num, 10, rate)
 
     time_start = datetime.now()
-    net.fit(train_images, train_labels, batch_size=batch_size, number_epochs=epochs)
+    net.fit(train_images, train_labels, batch_size=batch_size, number_epochs=number_epochs)
     time = datetime.now() - time_start
     train_result = net.evaluate(train_images, train_labels)
     test_result = net.evaluate(test_images, test_labels)

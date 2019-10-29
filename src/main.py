@@ -10,7 +10,7 @@ parser.add_argument('--hidden_num', type=int,  default=240,
                     help='Hidden layer nodes num')
 parser.add_argument('--batch_size', type=int, default=128,
                     help='Sample batch size')
-parser.add_argument('--rate', type=float, default=0.1,
+parser.add_argument('--rate', type=float, default=0.3,
                     help='Learning rate')
 parser.add_argument('--epochs', type=int, default=5,
                     help='Epochs count')
