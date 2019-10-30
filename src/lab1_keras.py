@@ -6,7 +6,7 @@ from keras import optimizers
 from datetime import datetime
 
 
-def run(hidden_size=512, batch_size=128, rate=0.001, epochs=5):
+def run(hidden_size=300, batch_size=128, rate=0.1, epochs=20):
     (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
     train_images = train_images.reshape((60000, 28 * 28))
     train_images = train_images.astype('float32') / 255
@@ -19,8 +19,8 @@ def run(hidden_size=512, batch_size=128, rate=0.001, epochs=5):
     network = models.Sequential()
     network.add(layers.Dense(hidden_size, activation='relu', input_shape=(28 * 28,)))
     network.add(layers.Dense(10, activation='softmax'))
-    rmsprop = optimizers.rmsprop(rate)
-    network.compile(optimizer=rmsprop,
+    optimizer = optimizers.SGD(rate)
+    network.compile(optimizer=optimizer,
                     loss='categorical_crossentropy',
                     metrics=['accuracy'])
     time_start = datetime.now()

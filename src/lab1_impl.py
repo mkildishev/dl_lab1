@@ -52,12 +52,18 @@ class Network:
         self.__batch_size = batch_size
         self.__input_nodes_num = X.shape[1]
         self.__init_weights()
-
+        epoch_num = 1
         for epoch in range(number_epochs):
             X, Y = shuffle_samples(X, Y)
             for i in range(0, X.shape[0], self.__batch_size):
                 self.__forward_prop(X[i:i + self.__batch_size])
                 self.__back_prop(X[i:i + self.__batch_size], Y[i:i + self.__batch_size])
+
+
+
+            crossentropy, accuracy = self.evaluate(X, Y)
+            print('Epoch №{} Train Accuracy: {}; Train loss: {}'.format(epoch_num, accuracy, crossentropy))
+            epoch_num +=1
 
     def __init_weights(self):
         coef_h = 2.0 / np.sqrt(self.__input_nodes_num + self.__hidden_nodes_num)
@@ -104,7 +110,7 @@ class Network:
         return cross_entropy, accuracy
 
 
-def run(hidden_nodes_num=240, batch_size=128, rate=0.1, number_epochs=20):
+def run(hidden_nodes_num=300, batch_size=128, rate=0.1, number_epochs=20):
     (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 
     train_images = train_images.reshape((60000, 28 * 28))
